@@ -25,12 +25,16 @@ const superheroes = [
 ];
 
 const typeDefinitions = gql`
+  type Address {
+    street: String!
+    city: String!
+  }
+
   type Superhero {
     id: ID!
     name: String!
     phone: String
-    street: String!
-    city: String!
+    address: Address!
   }
 
   type Query {
@@ -47,6 +51,14 @@ const resolvers = {
     findSuperhero: (root, args) => {
       const { name } = args;
       return superheroes.find(superhero => superhero.name === name);
+    },
+  },
+  Superhero: {
+    address: root => {
+      return {
+        street: root.street,
+        city: root.city,
+      };
     },
   },
 };
