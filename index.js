@@ -1,4 +1,5 @@
-import { ApolloServer, gql } from 'apollo-server';
+import { ApolloServer, UserInputError, gql } from 'apollo-server';
+import { v1 as uuid } from 'uuid';
 
 const superheroes = [
   {
@@ -42,6 +43,15 @@ const typeDefinitions = gql`
     allSuperheroes: [Superhero]!
     findSuperhero(name: String!): Superhero
   }
+
+  type Mutation {
+    addSuperhero(
+      name: String!
+      phone: String
+      street: String!
+      city: String!
+    ): Superhero
+  }
 `;
 
 const resolvers = {
@@ -51,6 +61,18 @@ const resolvers = {
     findSuperhero: (root, args) => {
       const { name } = args;
       return superheroes.find(superhero => superhero.name === name);
+    },
+  },
+  Mutation: {
+    addSuperhero: (root, args) => {
+      if (superheroes.find(element => element.name === args.name)) {
+        throw new UserInputError('Name must be unique', {
+          invalidArgs: args.name,
+        });
+      }
+      const superhero = { ...args, id: uuid() };
+      superheroes.push(superhero);
+      return superhero;
     },
   },
   Superhero: {
