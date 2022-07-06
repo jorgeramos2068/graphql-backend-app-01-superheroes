@@ -1,0 +1,16 @@
+{
+  "name": "graphql-backend-app-01-superheroes",
+  "version": "1.0.0",
+  "description": "Node.js with GraphQL application that configures a backend using Apollo Server to manage superheroes data",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^3.9.0",
+    "graphql": "^16.5.0"
+  }
+}
