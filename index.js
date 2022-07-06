@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server';
+import { ApolloServer, gql } from 'apollo-server';
 
 const superheroes = [
   {
@@ -36,6 +36,7 @@ const typeDefinitions = gql`
   type Query {
     superheroCount: Int!
     allSuperheroes: [Superhero]!
+    findSuperhero(name: String!): Superhero
   }
 `;
 
@@ -43,5 +44,14 @@ const resolvers = {
   Query: {
     superheroCount: () => superheroes.length,
     allSuperheroes: () => superheroes,
+    findSuperhero: (root, args) => {
+      const { name } = args;
+      return superheroes.find(superhero => superhero.name === name);
+    },
   },
 };
+
+const server = new ApolloServer({ typeDefs: typeDefinitions, resolvers });
+server.listen().then(({ url }) => {
+  console.log(`Server ready at ${url}`);
+});
