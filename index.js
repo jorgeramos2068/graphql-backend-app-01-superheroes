@@ -55,6 +55,7 @@ const typeDefinitions = gql`
       street: String!
       city: String!
     ): Superhero
+    editNumber(name: String!, phone: String!): Superhero
   }
 `;
 
@@ -84,6 +85,18 @@ const resolvers = {
       const superhero = { ...args, id: uuid() };
       superheroes.push(superhero);
       return superhero;
+    },
+    editNumber: (root, args) => {
+      const index = superheroes.findIndex(
+        element => element.name === args.name
+      );
+      if (!index === -1) {
+        return null;
+      }
+      const superhero = superheroes[index];
+      const updated = { ...superhero, phone: args.phone };
+      superheroes[index] = updated;
+      return updated;
     },
   },
   Superhero: {
