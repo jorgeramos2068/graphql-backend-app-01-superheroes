@@ -19,13 +19,17 @@ const superheroes = [
   {
     id: 'id-00003',
     name: 'Spiderman',
-    phone: '1800-0000002',
     street: 'Fake Street 002',
     city: 'Mexico City',
   },
 ];
 
 const typeDefinitions = gql`
+  enum YesNo {
+    YES
+    NO
+  }
+
   type Address {
     street: String!
     city: String!
@@ -40,7 +44,7 @@ const typeDefinitions = gql`
 
   type Query {
     superheroCount: Int!
-    allSuperheroes: [Superhero]!
+    allSuperheroes(phone: YesNo): [Superhero]!
     findSuperhero(name: String!): Superhero
   }
 
@@ -57,7 +61,14 @@ const typeDefinitions = gql`
 const resolvers = {
   Query: {
     superheroCount: () => superheroes.length,
-    allSuperheroes: () => superheroes,
+    allSuperheroes: (root, args) => {
+      if (!args.phone) {
+        return superheroes;
+      }
+      return superheroes.filter(superhero =>
+        args.phone === 'YES' ? superhero.phone : !superhero.phone
+      );
+    },
     findSuperhero: (root, args) => {
       const { name } = args;
       return superheroes.find(superhero => superhero.name === name);
