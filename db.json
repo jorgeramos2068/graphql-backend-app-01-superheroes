@@ -1,0 +1,24 @@
+{
+  "superheroes": [
+    {
+      "id": "id-00001",
+      "name": "Superman",
+      "phone": "1800-0000001",
+      "street": "Fake Street 001",
+      "city": "Madrid"
+    },
+    {
+      "id": "id-00002",
+      "name": "Batman",
+      "phone": "1800-0000002",
+      "street": "Fake Street 002",
+      "city": "Barcelona"
+    },
+    {
+      "id": "id-00003",
+      "name": "Spiderman",
+      "street": "Fake Street 002",
+      "city": "Mexico City"
+    }
+  ]
+}
