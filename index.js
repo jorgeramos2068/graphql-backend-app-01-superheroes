@@ -1,28 +1,6 @@
 import { ApolloServer, UserInputError, gql } from 'apollo-server';
+import axios from 'axios';
 import { v1 as uuid } from 'uuid';
-
-const superheroes = [
-  {
-    id: 'id-00001',
-    name: 'Superman',
-    phone: '1800-0000001',
-    street: 'Fake Street 001',
-    city: 'Madrid',
-  },
-  {
-    id: 'id-00002',
-    name: 'Batman',
-    phone: '1800-0000002',
-    street: 'Fake Street 002',
-    city: 'Barcelona',
-  },
-  {
-    id: 'id-00003',
-    name: 'Spiderman',
-    street: 'Fake Street 002',
-    city: 'Mexico City',
-  },
-];
 
 const typeDefinitions = gql`
   enum YesNo {
@@ -45,7 +23,7 @@ const typeDefinitions = gql`
   type Query {
     superheroCount: Int!
     allSuperheroes(phone: YesNo): [Superhero]!
-    findSuperhero(name: String!): Superhero
+    findSuperhero(id: ID!): Superhero
   }
 
   type Mutation {
@@ -55,48 +33,78 @@ const typeDefinitions = gql`
       street: String!
       city: String!
     ): Superhero
-    editNumber(name: String!, phone: String!): Superhero
+    editSuperhero(
+      id: ID!
+      name: String!
+      phone: String
+      street: String!
+      city: String!
+    ): Superhero
   }
 `;
 
 const resolvers = {
   Query: {
-    superheroCount: () => superheroes.length,
-    allSuperheroes: (root, args) => {
-      if (!args.phone) {
-        return superheroes;
+    superheroCount: async () => {
+      try {
+        const { data: superheroes } = await axios.get(
+          'http://localhost:3000/superheroes'
+        );
+        return superheroes.length;
+      } catch (err) {
+        console.error(err);
+        return 0;
       }
-      return superheroes.filter(superhero =>
-        args.phone === 'YES' ? superhero.phone : !superhero.phone
-      );
     },
-    findSuperhero: (root, args) => {
-      const { name } = args;
-      return superheroes.find(superhero => superhero.name === name);
+    allSuperheroes: async (root, args) => {
+      try {
+        const { data: superheroes } = await axios.get(
+          'http://localhost:3000/superheroes'
+        );
+        if (!args.phone) {
+          return superheroes;
+        }
+        return superheroes.filter(superhero =>
+          args.phone === 'YES' ? superhero.phone : !superhero.phone
+        );
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
+    },
+    findSuperhero: async (root, args) => {
+      const { id } = args;
+      try {
+        const { data: superheroe } = await axios.get(
+          `http://localhost:3000/superheroes/${id}`
+        );
+        return superheroe;
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
     },
   },
   Mutation: {
-    addSuperhero: (root, args) => {
-      if (superheroes.find(element => element.name === args.name)) {
-        throw new UserInputError('Name must be unique', {
-          invalidArgs: args.name,
-        });
-      }
-      const superhero = { ...args, id: uuid() };
-      superheroes.push(superhero);
-      return superhero;
-    },
-    editNumber: (root, args) => {
-      const index = superheroes.findIndex(
-        element => element.name === args.name
-      );
-      if (!index === -1) {
+    addSuperhero: async (root, args) => {
+      try {
+        const superhero = { ...args, id: uuid() };
+        await axios.post('http://localhost:3000/superheroes', superhero);
+        return superhero;
+      } catch (err) {
+        console.error(err);
         return null;
       }
-      const superhero = superheroes[index];
-      const updated = { ...superhero, phone: args.phone };
-      superheroes[index] = updated;
-      return updated;
+    },
+    editSuperhero: async (root, updatedSuperhero) => {
+      try {
+        const { id, ...otherFields } = updatedSuperhero;
+        await axios.put(`http://localhost:3000/superheroes/${id}`, otherFields);
+        return updatedSuperhero;
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
     },
   },
   Superhero: {

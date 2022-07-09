@@ -4,21 +4,27 @@
       "id": "id-00001",
       "name": "Superman",
       "phone": "1800-0000001",
-      "street": "Fake Street 001",
+      "street": "001 Fake Street",
       "city": "Madrid"
     },
     {
       "id": "id-00002",
       "name": "Batman",
       "phone": "1800-0000002",
-      "street": "Fake Street 002",
+      "street": "002 Fake Street",
       "city": "Barcelona"
     },
     {
       "id": "id-00003",
       "name": "Spiderman",
-      "street": "Fake Street 002",
+      "street": "003 Fake Street",
       "city": "Mexico City"
+    },
+    {
+      "id": "id-00004",
+      "name": "Wonder Woman",
+      "street": "004 Fake Street",
+      "city": "Temischira"
     }
   ]
 }
